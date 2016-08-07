@@ -3,9 +3,16 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        
+        xmlns:controls="http://metro.mahapps.com/winfx/xaml/controls"
+        xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+        BorderBrush="{DynamicResource AccentColorBrush}"
+        BorderThickness="1"
+        WindowStartupLocation="CenterScreen"
+        Title="Pokemon Bag" MinHeight="450" MinWidth="700" Height="450" Width="850"
         xmlns:local="clr-namespace:PokemonBag"
         mc:Ignorable="d"
-        Title="MainWindow" Height="350" Width="525">
+       >
     <Grid>
         
     </Grid>
