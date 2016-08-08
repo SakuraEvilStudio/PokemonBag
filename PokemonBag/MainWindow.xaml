@@ -1,19 +1,59 @@
-﻿<Window x:Class="PokemonBag.MainWindow"
+﻿<controls:MetroWindow x:Class="PokemonBag.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        
         xmlns:controls="http://metro.mahapps.com/winfx/xaml/controls"
+        xmlns:viewmodels="clr-namespace:PokemonBag.ViewModels"
         xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+        xmlns:simpleChildWindow="clr-namespace:MahApps.Metro.SimpleChildWindow;assembly=MahApps.Metro.SimpleChildWindow"
+        mc:Ignorable="d"
         BorderBrush="{DynamicResource AccentColorBrush}"
         BorderThickness="1"
         WindowStartupLocation="CenterScreen"
         Title="Pokemon Bag" MinHeight="450" MinWidth="700" Height="450" Width="850"
         xmlns:local="clr-namespace:PokemonBag"
-        mc:Ignorable="d"
-       >
-    <Grid>
-        
+        Loaded="MetroWindow_Loaded">
+
+    <controls:MetroWindow.RightWindowCommands>
+        <controls:WindowCommands>
+
+            <Button ToolTip="Start/Stop" Command="{Binding StartStopCommand}">
+                <materialDesign:PackIcon Kind="{Binding PausePlayButtonIcon, FallbackValue=Pause}" />
+            </Button>
+            <Button Cursor="Hand"  Command="{Binding PokemonComand}" >
+                <StackPanel Orientation="Horizontal">
+                    <Rectangle Width="14"
+                               Height="14"
+                               Fill="{Binding RelativeSource={RelativeSource AncestorType=Button},
+                                              Path=Foreground}">
+                        <Rectangle.OpacityMask>
+                            <VisualBrush Stretch="Fill" Visual="{StaticResource appbar_layer}" />
+                        </Rectangle.OpacityMask>
+                    </Rectangle>
+                    <TextBlock Margin="4 0 0 0"
+                               VerticalAlignment="Center"
+                               Text="Pokemon" />
+                </StackPanel>
+            </Button>
+            <Button Cursor="Hand"  Command="{Binding ItemComand}" >
+                <StackPanel Orientation="Horizontal">
+                    <Rectangle Width="14"
+                               Height="14"
+                               Fill="{Binding RelativeSource={RelativeSource AncestorType=Button},
+                                              Path=Foreground}">
+                        <Rectangle.OpacityMask>
+                            <VisualBrush Stretch="Fill" Visual="{StaticResource appbar_layer}" />
+                        </Rectangle.OpacityMask>
+                    </Rectangle>
+                    <TextBlock Margin="4 0 0 0"
+                               VerticalAlignment="Center"
+                               Text="Item" />
+                </StackPanel>
+            </Button>
+        </controls:WindowCommands>
+    </controls:MetroWindow.RightWindowCommands>
+    <Grid Name="RootGrid">
+
     </Grid>
-</Window>
+</controls:MetroWindow>

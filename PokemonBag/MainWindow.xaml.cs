@@ -1,4 +1,5 @@
-﻿using System;
+﻿using PokemonBag.Views;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -18,11 +19,17 @@ namespace PokemonBag
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
-    public partial class MainWindow : Window
+    public partial class MainWindow
     {
         public MainWindow()
         {
             InitializeComponent();
+        }
+
+        private async void MetroWindow_Loaded(object sender, RoutedEventArgs e)
+        {
+            await MahApps.Metro.SimpleChildWindow.ChildWindowManager.ShowChildWindowAsync(this, new LoginWindow() { AllowMove = false }, RootGrid);
+
         }
     }
 }
