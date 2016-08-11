@@ -35,7 +35,7 @@ namespace PokemonBag
             {
                 await MahApps.Metro.SimpleChildWindow.ChildWindowManager.ShowChildWindowAsync(this, new LoginWindow() { AllowMove = false }, RootGrid);
             }else {
-                SessionManager.Instance().Session.Client.ApiFailure = new ApiFailureStrategy(SessionManager.Instance().Session);
+                //SessionManager.Instance().Session.Client.ApiFailure = new ApiFailureStrategy(SessionManager.Instance().Session);
             }
         }
     }

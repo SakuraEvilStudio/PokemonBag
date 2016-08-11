@@ -55,10 +55,11 @@ namespace PokemonBag.Views
                 session.Settings.PtcPassword = Password.Password;
            }
            ((ClientSettings)SessionManager.Instance().Session.Settings).SaveSetting();
-           SessionManager.Instance().Session.Client.ApiFailure = new ApiFailureStrategy(SessionManager.Instance().Session);
+           SessionManager.Instance().Session.Reset(SessionManager.Instance().Session.Settings);
+          // SessionManager.Instance().Session.Client.ApiFailure = new ApiFailureStrategy(SessionManager.Instance().Session);
 
            PokemonAPILogic pokemonAPILogic = new PokemonAPILogic();
-            IResult loginResult = await pokemonAPILogic.Login(session);
+           IResult loginResult = await pokemonAPILogic.Login(SessionManager.Instance().Session);
            if (loginResult.IsSuccess == false)
            {
                 LoginErr.Text = loginResult.Message;
