@@ -69,6 +69,14 @@
       <HintPath>..\packages\Newtonsoft.Json.9.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="POGOProtos, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\POGOProtos\POGOProtos\bin\Debug\POGOProtos.dll</HintPath>
+    </Reference>
+    <Reference Include="Pokemon.Go.Rocket.API, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\FeroxRev\PokemonGo.RocketAPI\bin\Debug\Pokemon.Go.Rocket.API.dll</HintPath>
+    </Reference>
     <Reference Include="PropertyChanged, Version=1.51.3.0, Culture=neutral, PublicKeyToken=ee3ee20bcf148ddd, processorArchitecture=MSIL">
       <HintPath>..\packages\PropertyChanged.Fody.1.51.3\lib\dotnet\PropertyChanged.dll</HintPath>
       <Private>False</Private>
@@ -97,6 +105,13 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Common\ApiFailureStrategy.cs" />
+    <Compile Include="Logic\PokemonAPILogic.cs" />
+    <Compile Include="Logic\Settings.cs" />
+    <Compile Include="State\IResult.cs" />
+    <Compile Include="State\LoginResult.cs" />
+    <Compile Include="State\Session.cs" />
+    <Compile Include="Utils\DeviceInfoHelper.cs" />
     <Compile Include="ViewModels\MainWindowViewModel.cs" />
     <Compile Include="Views\LoginWindow.xaml.cs">
       <DependentUpon>LoginWindow.xaml</DependentUpon>
@@ -169,6 +184,12 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Resources\Entypo-license.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\FeroxRev\PokemonGo.RocketAPI\PokemonGo.RocketAPI.csproj">
+      <Project>{05D2DA44-1B8E-4CF7-94ED-4D52451CD095}</Project>
+      <Name>PokemonGo.RocketAPI</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

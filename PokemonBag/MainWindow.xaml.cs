@@ -1,18 +1,13 @@
-﻿using PokemonBag.Views;
+﻿
+
+using PokemonBag.Common;
+using PokemonBag.Logic;
+using PokemonBag.State;
+using PokemonBag.Views;
+using PokemonGo.RocketAPI.Enums;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.IO;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 
 namespace PokemonBag
 {
@@ -28,8 +23,20 @@ namespace PokemonBag
 
         private async void MetroWindow_Loaded(object sender, RoutedEventArgs e)
         {
-            await MahApps.Metro.SimpleChildWindow.ChildWindowManager.ShowChildWindowAsync(this, new LoginWindow() { AllowMove = false }, RootGrid);
+            var profileConfigPath = System.IO.Path.Combine(Directory.GetCurrentDirectory(), "config");
+            var configFile = Path.Combine(profileConfigPath, "config.json");
 
+            ApplicationSettings settings = ApplicationSettings.Load();
+
+            SessionManager.Instance().Session = new Session(new ClientSettings(settings));
+
+
+            if (settings.IsAutoLogin == false || (settings.AuthType != AuthType.Google && settings.AuthType != AuthType.Ptc))
+            {
+                await MahApps.Metro.SimpleChildWindow.ChildWindowManager.ShowChildWindowAsync(this, new LoginWindow() { AllowMove = false }, RootGrid);
+            }else {
+                SessionManager.Instance().Session.Client.ApiFailure = new ApiFailureStrategy(SessionManager.Instance().Session);
+            }
         }
     }
 }
