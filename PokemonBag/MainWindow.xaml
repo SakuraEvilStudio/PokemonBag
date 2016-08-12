@@ -17,7 +17,7 @@
 
     <controls:MetroWindow.RightWindowCommands>
         <controls:WindowCommands>
-
+            <TextBlock Name="PlayerName"/>
             <Button ToolTip="Start/Stop" Command="{Binding StartStopCommand}">
                 <materialDesign:PackIcon Kind="{Binding PausePlayButtonIcon, FallbackValue=Pause}" />
             </Button>

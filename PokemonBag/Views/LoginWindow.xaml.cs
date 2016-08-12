@@ -40,7 +40,6 @@ namespace PokemonBag.Views
            isAutoLogin = IsAutoLogin.IsChecked.Value;
            userName = UserName.Text;
            password = Password.Password;
-           session =  SessionManager.Instance().Session;
            if (AuthTypeRadioButton.Content.ToString() == AuthType.Google.ToString())
            {
                 session.Settings.AuthType = AuthType.Google;
@@ -79,6 +78,23 @@ namespace PokemonBag.Views
         private void AuthType_Checked(object sender, RoutedEventArgs e)
         {
             AuthTypeRadioButton = sender as RadioButton;
+        }
+
+        private void ChildWindow_Loaded(object sender, RoutedEventArgs e)
+        {
+            session = SessionManager.Instance().Session;
+            if (session.Settings.AuthType == AuthType.Google)
+            {
+                GoogleRadio.IsChecked = true;
+                UserName.Text = session.Settings.GoogleUsername;
+                Password.Password = session.Settings.GooglePassword;
+            } else if (session.Settings.AuthType == AuthType.Ptc)
+            {
+                PtcRadio.IsChecked = true;
+                UserName.Text = session.Settings.PtcUsername;
+                Password.Password = session.Settings.PtcPassword;
+            }
+            
         }
     }
 }
