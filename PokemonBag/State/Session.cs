@@ -1,5 +1,6 @@
 ﻿using POGOProtos.Networking.Responses;
 using PokemonBag.Common;
+using PokemonBag.Logic;
 using PokemonGo.RocketAPI;
 
 namespace PokemonBag.State
@@ -7,7 +8,7 @@ namespace PokemonBag.State
     public interface ISession
     {
         ISettings Settings { get; }
-        //Inventory Inventory { get; }
+        Inventory Inventory { get; }
         Client Client { get; }
         GetPlayerResponse Profile { get; set; }
     }
@@ -15,19 +16,27 @@ namespace PokemonBag.State
     public class Session : ISession
     {
         public ISettings Settings { get; }
+
+        public Inventory Inventory { get; private set; }
+
         public Client Client { get; private set; }
+
         public GetPlayerResponse Profile { get; set; }
 
+        public ApiFailureStrategy ApiFailureStrategy { get; set; }
+    
         public Session(ISettings settings)
         {
             Settings = settings;
+            ApiFailureStrategy = new ApiFailureStrategy(this);
             Reset(settings);
         }
 
         public void Reset(ISettings settings)
         {
-            ApiFailureStrategy _apiStrategy = new ApiFailureStrategy(this);
-            Client = new Client(Settings, _apiStrategy);
+            Client = new Client(Settings, ApiFailureStrategy);
+            // ferox wants us to set this manually
+            Inventory = new Inventory(Client);
         }
     }
 

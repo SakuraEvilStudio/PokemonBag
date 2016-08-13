@@ -26,6 +26,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -69,23 +70,22 @@
       <HintPath>..\packages\Newtonsoft.Json.9.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="POGOProtos, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\POGOProtos\POGOProtos\bin\Debug\POGOProtos.dll</HintPath>
-    </Reference>
-    <Reference Include="Pokemon.Go.Rocket.API, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\FeroxRev\PokemonGo.RocketAPI\bin\Debug\Pokemon.Go.Rocket.API.dll</HintPath>
-    </Reference>
     <Reference Include="PropertyChanged, Version=1.51.3.0, Culture=neutral, PublicKeyToken=ee3ee20bcf148ddd, processorArchitecture=MSIL">
       <HintPath>..\packages\PropertyChanged.Fody.1.51.3\lib\dotnet\PropertyChanged.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
-    <Reference Include="System.Windows.Interactivity, Version=4.5.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\packages\MahApps.Metro.1.2.4.0\lib\net45\System.Windows.Interactivity.dll</HintPath>
-      <Private>True</Private>
+    <Reference Include="System.Data.HashFunction.Core, Version=1.8.2.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\System.Data.HashFunction.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Data.HashFunction.Interfaces">
+      <HintPath>..\System.Data.HashFunction.Interfaces.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Data.HashFunction.xxHash, Version=1.8.2.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\System.Data.HashFunction.xxHash.dll</HintPath>
     </Reference>
     <Reference Include="System.Xml" />
     <Reference Include="Microsoft.CSharp" />
@@ -106,6 +106,9 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="Common\ApiFailureStrategy.cs" />
+    <Compile Include="Converter\PokemonIconConverter.cs" />
+    <Compile Include="Logging\ILogger.cs" />
+    <Compile Include="Logging\Logger.cs" />
     <Compile Include="Logic\Inventory.cs" />
     <Compile Include="Logic\PokemonAPILogic.cs" />
     <Compile Include="Logic\Settings.cs" />
@@ -113,9 +116,14 @@
     <Compile Include="State\LoginResult.cs" />
     <Compile Include="State\Session.cs" />
     <Compile Include="Utils\DeviceInfoHelper.cs" />
+    <Compile Include="Utils\PhoneGenerator.cs" />
+    <Compile Include="ViewModels\ActionCommand.cs" />
     <Compile Include="ViewModels\MainWindowViewModel.cs" />
-    <Compile Include="Views\LoginWindow.xaml.cs">
-      <DependentUpon>LoginWindow.xaml</DependentUpon>
+    <Compile Include="Views\PokemonView.xaml.cs">
+      <DependentUpon>PokemonView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\SettingView.xaml.cs">
+      <DependentUpon>SettingView.xaml</DependentUpon>
     </Compile>
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
@@ -141,7 +149,11 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Views\LoginWindow.xaml">
+    <Page Include="Views\PokemonView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\SettingView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -187,10 +199,171 @@
     <Resource Include="Resources\Entypo-license.txt" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\FeroxRev\PokemonGo.RocketAPI\PokemonGo.RocketAPI.csproj">
-      <Project>{05D2DA44-1B8E-4CF7-94ED-4D52451CD095}</Project>
+    <ProjectReference Include="..\POGOProtos\POGOProtos.csproj">
+      <Project>{a03a7bb2-4f0b-467b-84b2-9a76e6aae6fb}</Project>
+      <Name>POGOProtos</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Pokemon-Go-Rocket-API\PokemonGo.RocketAPI.csproj">
+      <Project>{05d2da44-1b8e-4cf7-94ed-4d52451cd095}</Project>
       <Name>PokemonGo.RocketAPI</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\Pokemon\abra.png" />
+    <Resource Include="Resources\Pokemon\aerodactyl.png" />
+    <Resource Include="Resources\Pokemon\alakazam.png" />
+    <Resource Include="Resources\Pokemon\arbok.png" />
+    <Resource Include="Resources\Pokemon\arcanine.png" />
+    <Resource Include="Resources\Pokemon\articuno.png" />
+    <Resource Include="Resources\Pokemon\beedrill.png" />
+    <Resource Include="Resources\Pokemon\bellsprout.png" />
+    <Resource Include="Resources\Pokemon\blastoise.png" />
+    <Resource Include="Resources\Pokemon\bulbasaur.png" />
+    <Resource Include="Resources\Pokemon\butterfree.png" />
+    <Resource Include="Resources\Pokemon\caterpie.png" />
+    <Resource Include="Resources\Pokemon\chansey.png" />
+    <Resource Include="Resources\Pokemon\charizard.png" />
+    <Resource Include="Resources\Pokemon\charmander.png" />
+    <Resource Include="Resources\Pokemon\charmeleon.png" />
+    <Resource Include="Resources\Pokemon\clefable.png" />
+    <Resource Include="Resources\Pokemon\clefairy.png" />
+    <Resource Include="Resources\Pokemon\cloyster.png" />
+    <Resource Include="Resources\Pokemon\cubone.png" />
+    <Resource Include="Resources\Pokemon\dewgong.png" />
+    <Resource Include="Resources\Pokemon\diglett.png" />
+    <Resource Include="Resources\Pokemon\ditto.png" />
+    <Resource Include="Resources\Pokemon\dodrio.png" />
+    <Resource Include="Resources\Pokemon\doduo.png" />
+    <Resource Include="Resources\Pokemon\dragonair.png" />
+    <Resource Include="Resources\Pokemon\dragonite.png" />
+    <Resource Include="Resources\Pokemon\dratini.png" />
+    <Resource Include="Resources\Pokemon\drowzee.png" />
+    <Resource Include="Resources\Pokemon\dugtrio.png" />
+    <Resource Include="Resources\Pokemon\eevee.png" />
+    <Resource Include="Resources\Pokemon\ekans.png" />
+    <Resource Include="Resources\Pokemon\electabuzz.png" />
+    <Resource Include="Resources\Pokemon\electrode.png" />
+    <Resource Include="Resources\Pokemon\exeggcute.png" />
+    <Resource Include="Resources\Pokemon\exeggutor.png" />
+    <Resource Include="Resources\Pokemon\farfetchd.png" />
+    <Resource Include="Resources\Pokemon\fearow.png" />
+    <Resource Include="Resources\Pokemon\flareon.png" />
+    <Resource Include="Resources\Pokemon\gastly.png" />
+    <Resource Include="Resources\Pokemon\gengar.png" />
+    <Resource Include="Resources\Pokemon\geodude.png" />
+    <Resource Include="Resources\Pokemon\gloom.png" />
+    <Resource Include="Resources\Pokemon\golbat.png" />
+    <Resource Include="Resources\Pokemon\goldeen.png" />
+    <Resource Include="Resources\Pokemon\golduck.png" />
+    <Resource Include="Resources\Pokemon\golem.png" />
+    <Resource Include="Resources\Pokemon\graveler.png" />
+    <Resource Include="Resources\Pokemon\grimer.png" />
+    <Resource Include="Resources\Pokemon\growlithe.png" />
+    <Resource Include="Resources\Pokemon\gyarados.png" />
+    <Resource Include="Resources\Pokemon\haunter.png" />
+    <Resource Include="Resources\Pokemon\hitmonchan.png" />
+    <Resource Include="Resources\Pokemon\hitmonlee.png" />
+    <Resource Include="Resources\Pokemon\horsea.png" />
+    <Resource Include="Resources\Pokemon\hypno.png" />
+    <Resource Include="Resources\Pokemon\ivysaur.png" />
+    <Resource Include="Resources\Pokemon\jigglypuff.png" />
+    <Resource Include="Resources\Pokemon\jolteon.png" />
+    <Resource Include="Resources\Pokemon\jynx.png" />
+    <Resource Include="Resources\Pokemon\kabuto.png" />
+    <Resource Include="Resources\Pokemon\kabutops.png" />
+    <Resource Include="Resources\Pokemon\kadabra.png" />
+    <Resource Include="Resources\Pokemon\kakuna.png" />
+    <Resource Include="Resources\Pokemon\kangaskhan.png" />
+    <Resource Include="Resources\Pokemon\kingler.png" />
+    <Resource Include="Resources\Pokemon\koffing.png" />
+    <Resource Include="Resources\Pokemon\krabby.png" />
+    <Resource Include="Resources\Pokemon\lapras.png" />
+    <Resource Include="Resources\Pokemon\lickitung.png" />
+    <Resource Include="Resources\Pokemon\machamp.png" />
+    <Resource Include="Resources\Pokemon\machoke.png" />
+    <Resource Include="Resources\Pokemon\machop.png" />
+    <Resource Include="Resources\Pokemon\magikarp.png" />
+    <Resource Include="Resources\Pokemon\magmar.png" />
+    <Resource Include="Resources\Pokemon\magnemite.png" />
+    <Resource Include="Resources\Pokemon\magneton.png" />
+    <Resource Include="Resources\Pokemon\mankey.png" />
+    <Resource Include="Resources\Pokemon\marowak.png" />
+    <Resource Include="Resources\Pokemon\meowth.png" />
+    <Resource Include="Resources\Pokemon\metapod.png" />
+    <Resource Include="Resources\Pokemon\mew.png" />
+    <Resource Include="Resources\Pokemon\mewtwo.png" />
+    <Resource Include="Resources\Pokemon\moltres.png" />
+    <Resource Include="Resources\Pokemon\mr-mime.png" />
+    <Resource Include="Resources\Pokemon\muk.png" />
+    <Resource Include="Resources\Pokemon\name.png" />
+    <Resource Include="Resources\Pokemon\nidoking.png" />
+    <Resource Include="Resources\Pokemon\nidoqueen.png" />
+    <Resource Include="Resources\Pokemon\nidoranfemale.png" />
+    <Resource Include="Resources\Pokemon\nidoranmale.png" />
+    <Resource Include="Resources\Pokemon\nidorina.png" />
+    <Resource Include="Resources\Pokemon\nidorino.png" />
+    <Resource Include="Resources\Pokemon\ninetales.png" />
+    <Resource Include="Resources\Pokemon\omanyte.png" />
+    <Resource Include="Resources\Pokemon\omastar.png" />
+    <Resource Include="Resources\Pokemon\onix.png" />
+    <Resource Include="Resources\Pokemon\paras.png" />
+    <Resource Include="Resources\Pokemon\parasect.png" />
+    <Resource Include="Resources\Pokemon\persian.png" />
+    <Resource Include="Resources\Pokemon\pidgeot.png" />
+    <Resource Include="Resources\Pokemon\pidgeotto.png" />
+    <Resource Include="Resources\Pokemon\pidgey.png" />
+    <Resource Include="Resources\Pokemon\pikachu.png" />
+    <Resource Include="Resources\Pokemon\pinsir.png" />
+    <Resource Include="Resources\Pokemon\poliwag.png" />
+    <Resource Include="Resources\Pokemon\poliwhirl.png" />
+    <Resource Include="Resources\Pokemon\poliwrath.png" />
+    <Resource Include="Resources\Pokemon\ponyta.png" />
+    <Resource Include="Resources\Pokemon\porygon.png" />
+    <Resource Include="Resources\Pokemon\primeape.png" />
+    <Resource Include="Resources\Pokemon\psyduck.png" />
+    <Resource Include="Resources\Pokemon\raichu.png" />
+    <Resource Include="Resources\Pokemon\rapidash.png" />
+    <Resource Include="Resources\Pokemon\raticate.png" />
+    <Resource Include="Resources\Pokemon\rattata.png" />
+    <Resource Include="Resources\Pokemon\rhydon.png" />
+    <Resource Include="Resources\Pokemon\rhyhorn.png" />
+    <Resource Include="Resources\Pokemon\sandshrew.png" />
+    <Resource Include="Resources\Pokemon\sandslash.png" />
+    <Resource Include="Resources\Pokemon\scyther.png" />
+    <Resource Include="Resources\Pokemon\seadra.png" />
+    <Resource Include="Resources\Pokemon\seaking.png" />
+    <Resource Include="Resources\Pokemon\seel.png" />
+    <Resource Include="Resources\Pokemon\shellder.png" />
+    <Resource Include="Resources\Pokemon\slowbro.png" />
+    <Resource Include="Resources\Pokemon\slowpoke.png" />
+    <Resource Include="Resources\Pokemon\snorlax.png" />
+    <Resource Include="Resources\Pokemon\spearow.png" />
+    <Resource Include="Resources\Pokemon\squirtle.png" />
+    <Resource Include="Resources\Pokemon\starmie.png" />
+    <Resource Include="Resources\Pokemon\staryu.png" />
+    <Resource Include="Resources\Pokemon\tangela.png" />
+    <Resource Include="Resources\Pokemon\tauros.png" />
+    <Resource Include="Resources\Pokemon\tentacool.png" />
+    <Resource Include="Resources\Pokemon\tentacruel.png" />
+    <Resource Include="Resources\Pokemon\vaporeon.png" />
+    <Resource Include="Resources\Pokemon\venomoth.png" />
+    <Resource Include="Resources\Pokemon\venonat.png" />
+    <Resource Include="Resources\Pokemon\venusaur.png" />
+    <Resource Include="Resources\Pokemon\victreebel.png" />
+    <Resource Include="Resources\Pokemon\vileplume.png" />
+    <Resource Include="Resources\Pokemon\voltorb.png" />
+    <Resource Include="Resources\Pokemon\vulpix.png" />
+    <Resource Include="Resources\Pokemon\wartortle.png" />
+    <Resource Include="Resources\Pokemon\weedle.png" />
+    <Resource Include="Resources\Pokemon\weepinbell.png" />
+    <Resource Include="Resources\Pokemon\weezing.png" />
+    <Resource Include="Resources\Pokemon\wigglytuff.png" />
+    <Resource Include="Resources\Pokemon\zapdos.png" />
+    <Resource Include="Resources\Pokemon\zubat.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Resources\encrypt32.dll" />
+    <Content Include="Resources\encrypt64.dll" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="..\packages\Fody.1.29.2\build\dotnet\Fody.targets" Condition="Exists('..\packages\Fody.1.29.2\build\dotnet\Fody.targets')" />

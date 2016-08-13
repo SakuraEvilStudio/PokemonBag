@@ -1,0 +1,38 @@
+﻿<UserControl x:Class="PokemonBag.Views.PokemonView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:viewmodels="clr-namespace:PokemonBag.ViewModels"
+             xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+             xmlns:converters="clr-namespace:MaterialDesignThemes.Wpf.Converters;assembly=MaterialDesignThemes.Wpf"
+             xmlns:local="clr-namespace:PokemonBag.Views"
+             mc:Ignorable="d" 
+             d:DesignHeight="300" d:DesignWidth="800"
+             d:DataContext="{d:DesignInstance {x:Type viewmodels:MainWindowViewModel}, IsDesignTimeCreatable=False}">
+    <Grid>
+        <DataGrid Name="PokeBag" ItemsSource="{Binding Pokemons}" AutoGenerateColumns="False"
+                VerticalContentAlignment="Center" IsReadOnly="True" Background="White" >
+            <DataGrid.Columns>
+                <DataGridTemplateColumn Header="Image" >
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <Image Source="{Binding PokemonId, Converter={StaticResource pokemonIconConverter}}"   Height="30" />
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+                <DataGridTextColumn Header="Name" Binding="{Binding PokemonId}" Width="120"/>
+                <DataGridTextColumn Header="CP" Binding="{Binding Cp}"/>
+                <DataGridTextColumn Header="IV" Binding="{Binding Iv}"/>
+                <DataGridTextColumn Header="HP" Binding="{Binding Stamina}" />
+                <DataGridTextColumn Header="Stamina" Binding="{Binding IndividualStamina}" />
+                <DataGridTextColumn Header="Attack" Binding="{Binding IndividualAttack}" />
+                <DataGridTextColumn Header="Defence" Binding="{Binding IndividualDefense}" />
+                <DataGridTextColumn Header="Move1"  Binding="{Binding Move1}" />
+                <DataGridTextColumn Header="Move2"  Binding="{Binding Move2}" />
+                <DataGridTextColumn Header="Candies/EvolveRequired" Binding="{Binding EvolveRequiredCandy}" />
+            </DataGrid.Columns>
+          
+        </DataGrid>
+    </Grid>
+</UserControl>

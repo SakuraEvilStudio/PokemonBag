@@ -18,23 +18,57 @@ namespace PokemonBag.Common
             _session = session;
         }
 
-        public async Task<ApiOperation> HandleApiFailure()
+        private async void DoLogin()
         {
-            return ApiOperation.Abort;
-        }
-
-        public void HandleApiSuccess()
-        {
+            try
+            {
+                await _session.Client.Login.DoLogin();
+            }
+            catch (AggregateException ae)
+            {
+                throw ae.Flatten().InnerException;
+            }
+            catch (Exception ex)
+            {
+                throw ex.InnerException;
+            }
         }
 
         public async Task<ApiOperation> HandleApiFailure(RequestEnvelope request, ResponseEnvelope response)
         {
-            return ApiOperation.Abort;
+            if (_retryCount == 11)
+                return ApiOperation.Abort;
+
+            await Task.Delay(500);
+            _retryCount++;
+
+            if (_retryCount % 5 == 0)
+            {
+                try
+                {
+                    DoLogin();
+                }
+                catch (PtcOfflineException)
+                {
+                    await Task.Delay(20000);
+                }
+                catch (AccessTokenExpiredException)
+                {
+
+                    await Task.Delay(2000);
+                }
+                catch (Exception ex) when (ex is InvalidResponseException || ex is TaskCanceledException)
+                {
+                    await Task.Delay(1000);
+                }
+            }
+
+            return ApiOperation.Retry;
         }
 
         public void HandleApiSuccess(RequestEnvelope request, ResponseEnvelope response)
         {
+            _retryCount = 0;
         }
-
     }
 }

@@ -1,5 +1,4 @@
-﻿
-
+﻿using POGOProtos.Data.Player;
 using POGOProtos.Networking.Responses;
 using PokemonBag.Common;
 using PokemonBag.Logic;
@@ -10,6 +9,8 @@ using System;
 using System.ComponentModel;
 using System.IO;
 using System.Windows;
+using System.Linq;
+using System.Windows.Controls;
 
 namespace PokemonBag
 {
@@ -18,41 +19,91 @@ namespace PokemonBag
     /// </summary>
     public partial class MainWindow
     {
-        private LoginWindow LoginWindow;
         private Inventory Inventory;
+        private GetPlayerResponse Profile;
+        private Session Session;
+        private RadioButton AuthTypeRadioButton;
 
         public MainWindow()
         {
             InitializeComponent();
         }
 
-        private async void MetroWindow_Loaded(object sender, RoutedEventArgs e)
+
+        private void MetroWindow_Loaded(object sender, RoutedEventArgs e)
         {
-            var profileConfigPath = System.IO.Path.Combine(Directory.GetCurrentDirectory(), "config");
-            var configFile = Path.Combine(profileConfigPath, "config.json");
-
             ApplicationSettings settings = ApplicationSettings.Load();
-
             SessionManager.Instance().Session = new Session(new ClientSettings(settings));
-
-
-            if (settings.IsAutoLogin == false || (settings.AuthType != AuthType.Google && settings.AuthType != AuthType.Ptc))
-            {
-                LoginWindow = new LoginWindow() { AllowMove = false };
-                await MahApps.Metro.SimpleChildWindow.ChildWindowManager.ShowChildWindowAsync(this, LoginWindow , RootGrid);
-                LoginWindow.ClosingFinished += LoginWindow_ClosingFinished; ;
-            }
-            else {
-                //SessionManager.Instance().Session.Client.ApiFailure = new ApiFailureStrategy(SessionManager.Instance().Session);
-            }
+            LoginForm.IsOpen = true;
         }
 
         private void LoginWindow_ClosingFinished(object sender, RoutedEventArgs e)
         {
-            Inventory = new Inventory(SessionManager.Instance().Session);
-            var PlayerInfo = String.Format("[Player: {0}] [LV {1}] [Team {2}]",
-                new object[3] { Inventory.GetPlayerName(), Inventory.GetPlayerLV(), Inventory.GetTeam()});
+            Inventory = SessionManager.Instance().Session.Inventory;
+            Profile = SessionManager.Instance().Session.Profile;
+
+            var PlayerInfo = String.Format("Player: {0} - Team {1} (StarDust {2})",
+                new object[3] { Profile.PlayerData.Username, Profile.PlayerData.Team, Profile.PlayerData.Currencies[1].Amount });
             PlayerName.Text = PlayerInfo;
         }
+
+        private void LoginForm_Loaded(object sender, RoutedEventArgs e)
+        {
+            Session = SessionManager.Instance().Session;
+            if (Session.Settings.AuthType == AuthType.Google)
+            {
+                GoogleRadio.IsChecked = true;
+                UserName.Text = Session.Settings.GoogleUsername;
+                Password.Password = Session.Settings.GooglePassword;
+            }
+            else if (Session.Settings.AuthType == AuthType.Ptc)
+            {
+                PtcRadio.IsChecked = true;
+                UserName.Text = Session.Settings.PtcUsername;
+                Password.Password = Session.Settings.PtcPassword;
+            }
+        }
+
+        private void AuthType_Checked(object sender, RoutedEventArgs e)
+        {
+            AuthTypeRadioButton = sender as RadioButton;
+        }
+
+        private void Cancel_Click(object sender, RoutedEventArgs e)
+        {
+            Application.Current.Shutdown();
+        }
+
+        private async void Login_Click(object sender, RoutedEventArgs e)
+        {
+            if (AuthTypeRadioButton.Content.ToString() == AuthType.Google.ToString())
+            {
+                Session.Settings.AuthType = AuthType.Google;
+                Session.Settings.GoogleUsername = UserName.Text;
+                Session.Settings.GooglePassword = Password.Password;
+
+            }
+            else if (AuthTypeRadioButton.Content.ToString() == AuthType.Ptc.ToString())
+            {
+                Session.Settings.AuthType = AuthType.Ptc;
+                Session.Settings.PtcUsername = UserName.Text;
+                Session.Settings.PtcPassword = Password.Password;
+            }
+           ((ClientSettings)SessionManager.Instance().Session.Settings).SaveSetting();
+            SessionManager.Instance().Session.Reset(SessionManager.Instance().Session.Settings);
+
+            PokemonAPILogic pokemonAPILogic = new PokemonAPILogic();
+            IResult loginResult = await pokemonAPILogic.Login(SessionManager.Instance().Session);
+            if (loginResult.IsSuccess == false)
+            {
+                LoginErr.Text = loginResult.Message;
+            }
+            else
+            {
+                LoginForm.Close();
+            }
+
+        }
+
     }
 }

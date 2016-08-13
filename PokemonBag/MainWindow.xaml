@@ -13,13 +13,14 @@
         WindowStartupLocation="CenterScreen"
         Title="Pokemon Bag" MinHeight="450" MinWidth="700" Height="450" Width="850"
         xmlns:local="clr-namespace:PokemonBag"
+        xmlns:views1="clr-namespace:PokemonBag.Views"
         Loaded="MetroWindow_Loaded">
-
+    
     <controls:MetroWindow.RightWindowCommands>
         <controls:WindowCommands>
             <TextBlock Name="PlayerName"/>
-            <Button ToolTip="Start/Stop" Command="{Binding StartStopCommand}">
-                <materialDesign:PackIcon Kind="{Binding PausePlayButtonIcon, FallbackValue=Pause}" />
+            <Button ToolTip="Refresh" Command="{Binding RefreshCommand}" CommandParameter="{Binding ElementName=PokeBag}">
+                <materialDesign:PackIcon Kind="{Binding RefreshButtonIcon, FallbackValue=Refresh}" />
             </Button>
             <Button Cursor="Hand"  Command="{Binding PokemonComand}" >
                 <StackPanel Orientation="Horizontal">
@@ -36,24 +37,82 @@
                                Text="Pokemon" />
                 </StackPanel>
             </Button>
-            <Button Cursor="Hand"  Command="{Binding ItemComand}" >
+            <Button Cursor="Hand"  Command="{Binding SettingComand}" >
                 <StackPanel Orientation="Horizontal">
                     <Rectangle Width="14"
                                Height="14"
                                Fill="{Binding RelativeSource={RelativeSource AncestorType=Button},
                                               Path=Foreground}">
                         <Rectangle.OpacityMask>
-                            <VisualBrush Stretch="Fill" Visual="{StaticResource appbar_layer}" />
+                            <VisualBrush Stretch="Fill" Visual="{StaticResource appbar_settings}" />
                         </Rectangle.OpacityMask>
                     </Rectangle>
                     <TextBlock Margin="4 0 0 0"
                                VerticalAlignment="Center"
-                               Text="Item" />
+                               Text="Setting" />
                 </StackPanel>
             </Button>
         </controls:WindowCommands>
     </controls:MetroWindow.RightWindowCommands>
+    
     <Grid Name="RootGrid">
+        <Grid.RowDefinitions>
+            <RowDefinition />
+            <RowDefinition Height="30" />
+        </Grid.RowDefinitions>
+        <materialDesign:Transitioner SelectedIndex="{Binding TransitionerIndex}">
+            <views1:PokemonView />
+            <views1:SettingView />
+        </materialDesign:Transitioner>
+        <TextBlock Grid.Row="1" Margin="16,0,0,0" VerticalAlignment="Center">
+            <Run Text="{Binding ThreadStatus}" />
+            <Run Text=" Status: " />
+            <Run Text="{Binding Status}" />
+        </TextBlock>
+
+        <simpleChildWindow:ChildWindow x:Name="LoginForm"
+									   CloseByEscape="False"
+									  BorderBrush="{DynamicResource AccentColorBrush}"
+                                     BorderThickness="1"
+                                       Loaded="LoginForm_Loaded"
+                                       ClosingFinished="LoginWindow_ClosingFinished"
+									   Title="Login">
+            <Grid>
+                <Grid.RowDefinitions >
+                    <RowDefinition Height="10"></RowDefinition>
+                    <RowDefinition ></RowDefinition>
+                    <RowDefinition Height="10"></RowDefinition>
+                    <RowDefinition ></RowDefinition>
+                    <RowDefinition Height="10"></RowDefinition>
+                    <RowDefinition ></RowDefinition>
+                    <RowDefinition Height="20"></RowDefinition>
+                    <RowDefinition></RowDefinition>
+                    <RowDefinition Height="10"></RowDefinition>
+                    <RowDefinition></RowDefinition>
+                    <RowDefinition Height="10"></RowDefinition>
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="10"></ColumnDefinition>
+                    <ColumnDefinition></ColumnDefinition>
+                    <ColumnDefinition Width="10"></ColumnDefinition>
+                    <ColumnDefinition></ColumnDefinition>
+                    <ColumnDefinition Width="10"></ColumnDefinition>
+                    <ColumnDefinition></ColumnDefinition>
+                    <ColumnDefinition Width="10"></ColumnDefinition>
+                </Grid.ColumnDefinitions>
+                <TextBlock Grid.Column="1" Grid.Row="1" >AuthType :</TextBlock>
+                <TextBlock Grid.Column="1" Grid.Row="3" >UserName :</TextBlock>
+                <TextBlock Grid.Column="1" Grid.Row="5" >Password :</TextBlock>
+                <RadioButton GroupName="LoginType" Name="GoogleRadio" Checked="AuthType_Checked" Height="25" VerticalAlignment="Top" Grid.Column="3" Grid.Row="1" IsChecked="True">Google</RadioButton>
+                <RadioButton GroupName="LoginType" Name="PtcRadio" Checked="AuthType_Checked" Height="25" VerticalAlignment="Top" Grid.Column="5" Grid.Row="1">Ptc</RadioButton>
+                <TextBox Name="UserName" Height="25" VerticalAlignment="Top" Grid.Column="3" Grid.Row="3" Grid.ColumnSpan="3"/>
+                <PasswordBox Name="Password" Height="25" VerticalAlignment="Top" Grid.Column="3" Grid.Row="5" Grid.ColumnSpan="3"/>
+
+                <Button Click="Login_Click" Width="100" Grid.Column="3" Grid.Row="7" VerticalAlignment="Top">Login</Button>
+                <Button Click="Cancel_Click" Width="100" Grid.Column="5" Grid.Row="7" VerticalAlignment="Top">Cancel</Button>
+                <TextBlock Name="LoginErr" Grid.Column="1" Grid.Row="9" Foreground="Red"  Grid.ColumnSpan="5"/>
+            </Grid>
+        </simpleChildWindow:ChildWindow>
 
     </Grid>
 </controls:MetroWindow>

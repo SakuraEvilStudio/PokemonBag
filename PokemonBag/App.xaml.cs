@@ -1,4 +1,5 @@
-﻿using System.Windows;
+﻿using PokemonBag.ViewModels;
+using System.Windows;
 
 namespace PokemonBag
 {
@@ -11,7 +12,7 @@ namespace PokemonBag
         {
             var mainWindow = new MainWindow
             {
-                //DataContext = new MainWindowViewModel()
+                DataContext = new MainWindowViewModel()
             };
             mainWindow.Show();
         }
